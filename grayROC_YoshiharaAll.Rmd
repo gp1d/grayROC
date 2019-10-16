@@ -1,0 +1,54 @@
+---
+title: "grayROC on all genes from Yoshihara data"
+author: "Giovanni Parmigiani"
+date: "10/15/2019"
+output:
+  html_document:
+    df_print: paged
+---
+
+Script for producing Fuzzy ROC plot for all genes in the Yoshihara and TCGA dataset below
+
+Loading data packages.
+
+```{r, include=FALSE}
+library(curatedOvarianData)
+data(GSE32063_eset)
+data(TCGA_eset)
+```
+
+Loading gray ROC package
+
+```{r, include=FALSE}
+library(grayROC)
+```
+
+Yoshihara
+
+```{r, echo=FALSE}
+#for (gg in 1:nrow( exprs(GSE32063_eset))){
+for (gg in 1:2){ # replace with line above to produce all 20K+ plots
+  XX = exp ( exprs(GSE32063_eset)[gg,] )
+  YY = 1 * ( pData(GSE32063_eset)[,"debulking"] == "optimal" )
+  plot(XX,YY,xlab=rownames( exprs(GSE32063_eset) )[gg],ylab="CLASS LABEL",ylim=c(-.1,1.1),cex=2)
+  ROC = grayROC(XX,YY,0)
+  fROC = grayROC(XX,YY,.2)
+  grayROCplot(fROC,mainTitle=rownames( exprs(GSE32063_eset) )[gg],segm=TRUE,set=FALSE)
+  lines(1-ROC$F0star,1-ROC$F1star)
+}
+```
+
+TCGA
+
+```{r, echo=FALSE}
+#for (gg in 1:nrow( exprs(TCGA_eset))){
+for (gg in 1:2){ # replace with line above to produce all 13K+ plots
+  XX = exp ( exprs(TCGA_eset)[gg,] )
+  YY = 1 * ( pData(TCGA_eset)[,"debulking"] == "optimal" )
+  plot(XX,YY,xlab=rownames( exprs(TCGA_eset) )[gg],ylab="CLASS LABEL",ylim=c(-.1,1.1),cex=2)
+  ROC = grayROC(XX,YY,0)
+  fROC = grayROC(XX,YY,.2)
+  grayROCplot(fROC,mainTitle=rownames( exprs(TCGA_eset) )[gg],segm=TRUE,set=FALSE)
+  lines(1-ROC$F0star,1-ROC$F1star)
+}
+```
